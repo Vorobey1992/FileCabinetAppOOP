@@ -1,86 +1,51 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using FileCabinetAppOOP.Caching;
+using FileCabinetAppOOP.Storage;
+using FileCabinetAppOOP.View;
 
 namespace FileCabinetAppOOP.Task1
 {
     public class FileCabinet
     {
-        public List<IDocument> Documents { get; set; }
+        private readonly IDocumentStorage documentStorage;
+        private readonly ICacheManager cacheManager;
 
-        // Task 3
-        private readonly Dictionary<Type, List<IDocument>> cachedDocuments = new();
-
-        public FileCabinet()
+        public FileCabinet(IDocumentStorage documentStorage, ICacheManager cacheManager)
         {
-            Documents = new List<IDocument>();
+            this.documentStorage = documentStorage;
+            this.cacheManager = cacheManager;
         }
 
-        // Метод для добавления документов различных типов
         public void AddDocument(IDocument document)
         {
-            Documents.Add(document);
+            // Добавляем документ в хранилище
+            documentStorage.AddDocument(document);
+
+            // Получаем уникальный идентификатор документа (например, номер документа)
+            string documentNumber = document.GetDocumentNumber();
+
+            // Проверяем, что атрибуты для кэша больше 0
+            if (DocumentProcessor.GetCacheExpirationTime(document.GetType()) > 0)
+            {
+                // Добавляем результаты поиска в кэш с соответствующим временем жизни
+                var cacheExpirationTime = DocumentProcessor.GetCacheExpirationTime(document.GetType());
+                cacheManager.Add(documentNumber, document, TimeSpan.FromMinutes(cacheExpirationTime));
+            }
         }
 
-        // Метод для поиска карточек по номеру документа
+
         public List<IDocument> SearchByDocumentNumber(string documentNumber)
         {
-            return Documents.Where(document => document.GetDocumentNumber() == documentNumber).ToList();
-        }
-
-        // Task 3
-        public void CacheDocuments()
-        {
-            var documentTypes = GetDocumentTypesWithCacheAttribute();
-
-            foreach (var documentType in documentTypes)
+            // Сначала проверяем, есть ли документы в кэше
+            var cachedDocuments = cacheManager.Get<IDocument>(documentNumber);
+            if (cachedDocuments != null)
             {
-                var documents = GetDocumentsByType(documentType);
-                if (documents != null)
-                {
-                    if (!cachedDocuments.ContainsKey(documentType))
-                    {
-                        cachedDocuments.Add(documentType, documents);
-                    }
-                    else
-                    {
-                        cachedDocuments[documentType] = documents;
-                    }
-                }
-            }
-        }
-
-        private List<IDocument> GetDocumentsByType(Type documentType)
-        {
-            return Documents.Where(document => document.GetType() == documentType).ToList();
-        }
-
-        private static IEnumerable<Type> GetDocumentTypesWithCacheAttribute()
-        {
-            var documentTypes = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(s => s.GetTypes())
-                .Where(p => typeof(IDocument).IsAssignableFrom(p) && !p.IsInterface && !p.IsAbstract);
-
-            var typesWithCacheAttribute = new List<Type>();
-            foreach (var documentType in documentTypes)
-            {
-                var attributes = documentType.GetCustomAttributes(typeof(CacheExpirationAttribute), true);
-                if (attributes.Length > 0)
-                {
-                    typesWithCacheAttribute.Add(documentType);
-                }
+                return cachedDocuments;
             }
 
-            return typesWithCacheAttribute;
-        }
+            // Если в кэше нет, то ищем в хранилище данных
+            var searchResults = documentStorage.SearchDocumentsByNumber(documentNumber);
 
-        public List<IDocument>? GetCachedDocuments<T>()
-        {
-            if (cachedDocuments.ContainsKey(typeof(T)))
-            {
-                return cachedDocuments[typeof(T)];
-            }
-            return null;
+            return searchResults;
         }
     }
 }

@@ -1,4 +1,8 @@
 ﻿
+using FileCabinetAppOOP.Attributes;
+using FileCabinetAppOOP.View;
+using System.Diagnostics.CodeAnalysis;
+
 namespace FileCabinetAppOOP.Task1
 {
     [CacheExpiration(ExpirationTime = 10)]
@@ -10,6 +14,13 @@ namespace FileCabinetAppOOP.Task1
         public int NumberOfPages { get; set; }
         public string? Publisher { get; set; }
         public DateTime DatePublished { get; set; }
+
+        public string DocumentType { get; }
+
+        public Book()
+        {
+            DocumentType = typeof(Book).AssemblyQualifiedName ?? throw new ArgumentNullException(nameof(DocumentType));
+        }
 
         public void PrintDocumentInfo()
         {

@@ -1,4 +1,8 @@
 ﻿
+using FileCabinetAppOOP.Attributes;
+using FileCabinetAppOOP.Task1;
+using FileCabinetAppOOP.View;
+
 namespace FileCabinetAppOOP.Task2
 {
     [CacheExpiration(ExpirationTime = 60)]
@@ -9,6 +13,13 @@ namespace FileCabinetAppOOP.Task2
         public DateTime DatePublished { get; set; }
         public string? Publisher { get; set; }
         public int ReleaseNumber { get; set; }
+
+        public string DocumentType { get; }
+
+        public Magazine()
+        {
+            DocumentType = typeof(Magazine).AssemblyQualifiedName ?? throw new ArgumentNullException(nameof(DocumentType));
+        }
 
         public void PrintDocumentInfo()
         {

@@ -1,9 +1,10 @@
-﻿using FileCabinetAppOOP.Task1;
+﻿using FileCabinetAppOOP.Attributes;
+using FileCabinetAppOOP.Task1;
 using FileCabinetAppOOP.Task2;
 
-namespace FileCabinetAppOOP
+namespace FileCabinetAppOOP.View
 {
-    public class DocumentProcessor
+    public class DocumentProcessor : IDocumentsPrint, ICacheExpirationManager
     {
         public static void PrintSearchResults(List<IDocument> searchResults)
         {

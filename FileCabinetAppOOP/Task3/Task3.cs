@@ -1,5 +1,9 @@
-﻿using FileCabinetAppOOP.Task1;
+﻿using FileCabinetAppOOP.All_UI;
+using FileCabinetAppOOP.Caching;
+using FileCabinetAppOOP.Storage;
+using FileCabinetAppOOP.Task1;
 using FileCabinetAppOOP.Task2;
+using FileCabinetAppOOP.View;
 
 namespace FileCabinetAppOOP.Task3
 {
@@ -9,10 +13,21 @@ namespace FileCabinetAppOOP.Task3
         {
             Console.WriteLine("\nTask 3 - Add ability to cache card info once read.");
 
-            FileCabinet fileCabinet = new();
+            // Получаем путь к временной директории
+            string tempPath = Path.GetTempPath();
+
+            // Создаем экземпляр FileDocumentStorage и MemoryCacheManager
+            var documentStorage = new FileDocumentStorage(tempPath); // Передаем путь к директории, где будут храниться файлы документов
+            var cacheManager = new MemoryCacheManager();
+
+            // Создаем экземпляр FileCabinet и передаем зависимости
+            var fileCabinet = new FileCabinet(documentStorage, cacheManager);
+
+            // Создаем экземпляр ConsoleUIAdapter и передаем FileCabinet
+            var consoleUIAdapter = new ConsoleUIAdapter(fileCabinet);
 
             // Example of adding documents
-            fileCabinet.AddDocument(new Patent
+            consoleUIAdapter.AddDocument(new Patent
             {
                 Title = "Patent Title 1",
                 Authors = "Author A",
@@ -20,7 +35,7 @@ namespace FileCabinetAppOOP.Task3
                 UniqueId = 1
             });
 
-            fileCabinet.AddDocument(new Book
+            consoleUIAdapter.AddDocument(new Book
             {
                 ISBN = "1234567890",
                 Title = "Book Title 1",
@@ -31,7 +46,7 @@ namespace FileCabinetAppOOP.Task3
             });
 
             // Example of adding a localized book
-            fileCabinet.AddDocument(new LocalizedBook
+            consoleUIAdapter.AddDocument(new LocalizedBook
             {
                 ISBN = "0987654321",
                 Title = "Localized Book Title 1",
@@ -44,7 +59,7 @@ namespace FileCabinetAppOOP.Task3
             });
 
             // Example of adding a magazine
-            fileCabinet.AddDocument(new Magazine
+            consoleUIAdapter.AddDocument(new Magazine
             {
                 Title = "Magazine Title 1",
                 Authors = "Author D",
@@ -53,37 +68,9 @@ namespace FileCabinetAppOOP.Task3
                 DatePublished = DateTime.Now.AddDays(-15)
             });
 
-            // Example of caching document cards
-            fileCabinet.CacheDocuments();
-
-            // Example of using cached patent cards
-            var cachedPatents = fileCabinet.GetCachedDocuments<Patent>();
-            if (cachedPatents != null)
-            {
-                DocumentProcessor.PrintSearchResults(cachedPatents);
-            }
-
-            // Example of using cached book cards
-            var cachedBooks = fileCabinet.GetCachedDocuments<Book>();
-            if (cachedBooks != null)
-            {
-                DocumentProcessor.PrintSearchResults(cachedBooks);
-            }
-
-            // Example of using cached localized book cards
-            var cachedLocalizedBooks = fileCabinet.GetCachedDocuments<LocalizedBook>();
-            if (cachedLocalizedBooks != null)
-            {
-                DocumentProcessor.PrintSearchResults(cachedLocalizedBooks);
-            }
-
-            // Example of using cached magazine cards
-            var cachedMagazines = fileCabinet.GetCachedDocuments<Magazine>();
-            if (cachedMagazines != null)
-            {
-                DocumentProcessor.PrintSearchResults(cachedMagazines);
-            }
-
+            // Example of using cached documents of all types
+            var allCachedDocuments = cacheManager.GetAll<IDocument>();
+            DocumentProcessor.PrintSearchResults(allCachedDocuments);
         }
     }
 }

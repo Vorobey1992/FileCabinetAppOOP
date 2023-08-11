@@ -1,5 +1,7 @@
 ﻿
+using FileCabinetAppOOP.Attributes;
 using FileCabinetAppOOP.Task2;
+using FileCabinetAppOOP.View;
 
 namespace FileCabinetAppOOP.Task1
 {
@@ -10,6 +12,13 @@ namespace FileCabinetAppOOP.Task1
         public string? Authors { get; set; }
         public DateTime DatePublished { get; set; }
         public int UniqueId { get; set; }
+
+        public string DocumentType { get; }
+
+        public Patent()
+        {
+            DocumentType = typeof(Patent).AssemblyQualifiedName ?? throw new ArgumentNullException(nameof(DocumentType));
+        }
 
         public void PrintDocumentInfo()
         {

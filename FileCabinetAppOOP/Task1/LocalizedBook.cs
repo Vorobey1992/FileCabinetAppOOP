@@ -1,5 +1,7 @@
 ﻿
 using System.Xml;
+using FileCabinetAppOOP.Attributes;
+using FileCabinetAppOOP.View;
 
 namespace FileCabinetAppOOP.Task1
 {
@@ -14,6 +16,13 @@ namespace FileCabinetAppOOP.Task1
         public string? CountryOfLocalization { get; set; }
         public string? LocalPublisher { get; set; }
         public DateTime DatePublished { get; set; }
+
+        public string DocumentType { get; }
+
+        public LocalizedBook()
+        {
+            DocumentType = typeof(LocalizedBook).AssemblyQualifiedName ?? throw new ArgumentNullException(nameof(DocumentType));
+        }
 
         public void PrintDocumentInfo()
         {
