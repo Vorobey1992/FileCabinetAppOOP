@@ -1,9 +1,8 @@
-﻿
-using FileCabinetAppOOP.Attributes;
+﻿using FileCabinetAppOOP.Attributes;
 using FileCabinetAppOOP.Task1;
 using FileCabinetAppOOP.View;
 
-namespace FileCabinetAppOOP.Task2
+namespace FileCabinetAppOOP.Documents
 {
     [CacheExpiration(ExpirationTime = 60)]
     public class Magazine : IDocument
@@ -23,13 +22,13 @@ namespace FileCabinetAppOOP.Task2
 
         public void PrintDocumentInfo()
         {
-            Console.WriteLine($"Type: {this.GetType().Name}");
+            Console.WriteLine($"Type: {GetType().Name}");
             Console.WriteLine($"Title: {Title}");
             Console.WriteLine($"Authors: {Authors}");
             Console.WriteLine($"Date Published: {DatePublished}");
             Console.WriteLine($"Publisher: {Publisher}");
             Console.WriteLine($"Release Number: {ReleaseNumber}");
-            int cacheExpirationTime = DocumentProcessor.GetCacheExpirationTime(this.GetType());
+            int cacheExpirationTime = DocumentProcessor.GetCacheExpirationTime(GetType());
             Console.WriteLine($"Cache Expiration Time: {cacheExpirationTime} minutes");
             Console.WriteLine();
         }

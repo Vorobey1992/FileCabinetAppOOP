@@ -1,6 +1,5 @@
 ﻿
 using FileCabinetAppOOP.Attributes;
-using FileCabinetAppOOP.Task2;
 using FileCabinetAppOOP.View;
 
 namespace FileCabinetAppOOP.Task1

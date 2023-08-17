@@ -1,4 +1,6 @@
-﻿namespace FileCabinetAppOOP.View
+﻿using FileCabinetAppOOP.Documents;
+
+namespace FileCabinetAppOOP.View
 {
     public interface IDocumentsPrint
     {
